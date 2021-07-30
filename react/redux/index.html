@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script type="module">
+    import {
+      createStore,
+      createThunkMiddleware,
+      bindActionCreators,
+      combineReducer,
+      applyMiddleware,
+      reduxPromise,
+    } from "./index.js"
+
+    function userReduer(state = { name: "Tencent" }, action) {
+      switch(action.type) {
+        case "SET_USER_NAME":
+          return {
+            ...state,
+            name: "Alibaba"
+          }
+        case "SET_USER_AGE":
+          return {
+            ...state,
+            age: 50
+          }
+        default:
+          return state
+      }
+    }
+
+    function otherReducer(state = { name: "Tencent" }, action) {
+      switch(action.type) {
+        case "SET_OTHER_NAME":
+          return {
+            ...state,
+            name: "ZIJIE"
+          }
+        case "SET_OTHER_AGE":
+          return {
+            ...state,
+            age: 80
+          }
+        default:
+          return state
+      }
+    }
+
+    function logger(store) {
+      return function(next) {
+        return function(action) {
+          console.error("@Redux Actoin", action.type)
+          next(action)
+        }
+      }
+    }
+
+    const reduxThunk = createThunkMiddleware()
+
+    const store = createStore(userReduer, {}, applyMiddleware(logger, reduxThunk, reduxPromise))
+
+
+    const nextReducer = combineReducer({
+      user: userReduer,
+      other: otherReducer
+    })
+
+    store.replaceReducer(nextReducer)
+
+    store.subscribe(() => {
+      console.error("subscribe", store.getState())
+    })
+
+    async function setUserName() {
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      return {
+        type: "SET_USER_NAME"
+      }
+    }
+
+    function setUserAge() {
+      return {
+        type: "SET_USER_AGE"
+      }
+    }
+    function setOtherName() {
+      return {
+        type: "SET_OTHER_NAME"
+      }
+    }
+    function setOtherAge() {
+      return {
+        type: "SET_OTHER_AGE"
+      }
+    }
+    const actions = bindActionCreators({ setUserName, setUserAge, setOtherName, setOtherAge }, store.dispatch)
+    actions.setUserName()
+    actions.setUserAge()
+    actions.setOtherName()
+    actions.setOtherAge()
+  </script>
+</body>
+</html>
