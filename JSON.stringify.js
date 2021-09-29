@@ -1,6 +1,6 @@
 // 手写JSON.stringify
 
-JSON.stringify = function (input) {
+function stringify(input) {
   if (input === null || typeof input !== "object") return String(input);
 
   let res = [],
@@ -9,9 +9,7 @@ JSON.stringify = function (input) {
 
   function padStr(origin, start, end) {
     const isObject = typeof origin === "object";
-    return `${isObject ? "" : start}${JSON.stringify(origin)}${
-      isObject ? "" : end
-    }`;
+    return `${isObject ? "" : start}${stringify(origin)}${isObject ? "" : end}`;
   }
 
   for (const key in input) {
@@ -28,16 +26,4 @@ JSON.stringify = function (input) {
   return isObject
     ? padStr(String(res), "{", "}")
     : padStr(String(res), "[", "]");
-};
-
-console.log(
-  JSON.parse(
-    JSON.stringify({
-      name: "Alibaba",
-      age: 30,
-      other: { name: "heihei", age: 39 },
-    })
-  )
-);
-
-console.log(JSON.parse(JSON.stringify([{ name: "Alibaba" }])));
+}

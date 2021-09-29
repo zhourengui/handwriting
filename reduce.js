@@ -5,6 +5,5 @@ Array.prototype.reduce = function (handler, init) {
   for (const item of this) {
     res = handler(res, item);
   }
-
   return res;
 };
