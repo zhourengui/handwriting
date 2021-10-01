@@ -190,55 +190,33 @@ class Promise {
     return new Promise((_, reject) => reject(reason));
   }
   static limit(count) {
-    const jobs = [];
-    let working = 0;
+    let queue = [],
+      working = 0;
 
-    function queue(fn) {
+    function addTask(asyncTask) {
       return new Promise((resolve, reject) => {
-        jobs.push({ fn, resolve, reject });
+        asyncTask.resolve = resolve;
+        asyncTask.reject = reject;
+        if (working >= count) {
+          queue.push(asyncTask);
+        } else {
+          runTask(asyncTask);
+        }
       });
     }
 
-    function dequeue() {
-      if (jobs.length) {
-        const { fn, resolve, reject } = jobs.shift();
-        run(fn).then(resolve, reject).catch(reject);
-      }
-    }
-
-    function remove() {
-      working--;
-      if (count > working) {
-        dequeue();
-      }
-    }
-
-    function run(fn) {
+    function runTask(asyncTask) {
       working++;
-      try {
-        return Promise.resolve(fn()).then(
-          (res) => {
-            remove();
-            return res;
-          },
-          (error) => {
-            remove();
-            throw error;
-          }
-        );
-      } catch (error) {
-        remove();
-        return Promise.reject(error);
-      }
+      Promise.resolve(asyncTask()).then((data) => {
+        working--;
+        asyncTask.resolve(data);
+        if (queue.length) {
+          runTask(queue.shift());
+        }
+      });
     }
 
-    return function (fn) {
-      if (working >= count) {
-        return queue(fn);
-      } else {
-        return run(fn);
-      }
-    };
+    return addTask;
   }
 }
 

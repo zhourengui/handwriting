@@ -1,30 +1,32 @@
 Function.prototype.bind = function (context) {
-  const that = this
-  const prevArgs = Array.prototype.slice.call(arguments, 1)
+  const prevArgs = Array.prototype.slice.call(arguments, 1);
+  const _this = this;
 
-  function bindFn() {
-    const nextArgs = Array.prototype.slice.call(arguments)
-    const res = that.apply(
-      this instanceof bindFn ? this : context,
+  function BindFn() {
+    const nextArgs = Array.prototype.slice.call(arguments);
+    const res = _this.apply(
+      this instanceof BindFn ? this : context,
       prevArgs.concat(nextArgs)
-    )
-    return res instanceof bindFn ? (typeof res === "object" ? res : this) : res
+    );
+
+    return res instanceof BindFn ? (typeof res === "object" ? res : this) : res;
   }
 
-  bindFn.prototype = Object.create(this.prototype)
-  bindFn.prototype.constructor = bindFn
+  BindFn.prototype = Object.create(this.prototype);
+  BindFn.prototype.constructor = BindFn;
 
-  return bindFn
-}
+  return BindFn;
+};
 
 // demo
 function fn1() {
-  console.error(this.name)
-  this.name = 123
+  console.error(this.name);
+  this.name = 123;
 }
 
-fn1.prototype.age = 30
+fn1.prototype.age = 30;
 
-const bindFn = fn1.bind({ name: "Tencent" })
-console.error(bindFn())
-console.error(new bindFn())
+const bindFn = fn1.bind({ name: "Tencent" });
+console.error(bindFn());
+console.log(bindFn.prototype);
+console.error(new bindFn());

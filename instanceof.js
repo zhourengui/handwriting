@@ -1,16 +1,16 @@
 function MyInstanceof(A, B) {
-  let target = B.prototype
-  let proto = A.__proto__
+  let target = B.prototype;
+  let proto = A;
 
   while (proto) {
     if (target === proto) {
-      return true
+      return true;
     }
 
-    proto = proto.__proto__
+    proto = proto.__proto__;
   }
 
-  return false
+  return false;
 }
 // demo
-console.error(MyInstanceof([], Array))
+console.error(MyInstanceof([], Array));

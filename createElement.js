@@ -1,5 +1,13 @@
 // 写一个函数实现把虚拟dom转化为真实dom(虚拟dom:{ tag: "div", props: {}, children: [] })
 
+function h(tag, props, children) {
+  return {
+    tag,
+    props,
+    children,
+  };
+}
+
 function createHTMLElement({ tag, props, children }) {
   const nextDOM = document.createElement(tag);
 
@@ -8,21 +16,18 @@ function createHTMLElement({ tag, props, children }) {
   }
 
   for (const child of [].concat(children)) {
-    nextDOM.appendChild(typeof child !== "object" ? document.createTextNode(child) : createHTMLElement(child));
+    nextDOM.appendChild(
+      typeof child !== "object"
+        ? document.createTextNode(child)
+        : createHTMLElement(child)
+    );
   }
 
   return nextDOM;
 }
 
 // demo
-const node = createHTMLElement({
-  tag: "div",
-  props: {},
-  children: [
-    {
-      tag: "span",
-      props: {},
-      children: [{ tag: "div", props: {}, children: ["text"] }, "text1"],
-    },
-  ],
-});
+const node = createHTMLElement(
+  h("div", {}, [h("span", { style: "color: red" }, ["测试文本"])])
+);
+console.log(node);

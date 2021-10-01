@@ -1,16 +1,18 @@
 // js实现一个带并发限制的异步调度器schedule，保证同时运行的任务最多有两个
+
 class Scheduler {
-  constructor(max = 2) {
-    this.max = max;
-    this.unwork = [];
-    this.working = [];
+  constructor(maxConcurrent = 1) {
+    this.maxConcurrent = maxConcurrent;
+    this.working = 0;
+    this.queue = [];
   }
 
   addTask(asyncTask) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       asyncTask.resolve = resolve;
-      if (this.working.length >= this.max) {
-        this.unwork.push(asyncTask);
+      asyncTask.reject = reject;
+      if (this.working >= this.maxConcurrent) {
+        this.queue.push(asyncTask);
       } else {
         this.runTask(asyncTask);
       }
@@ -18,18 +20,19 @@ class Scheduler {
   }
 
   runTask(asyncTask) {
-    this.working.push(asyncTask);
-    asyncTask().then(() => {
+    this.working++;
+    Promise.resolve(asyncTask()).then(() => {
+      this.working--;
       asyncTask.resolve();
-      if (this.unwork.length) {
-        this.runTask(this.unwork.shift());
+      if (this.queue.length) {
+        this.runTask(this.queue.shift());
       }
-    });
+    }, asyncTask.reject);
   }
 }
 
 // demo
-const scheduler = new Scheduler();
+const scheduler = new Scheduler(3);
 const sleep = (wait) => new Promise((resolve) => setTimeout(resolve, wait));
 
 scheduler.addTask(() => sleep(4000)).then(() => console.log(1));

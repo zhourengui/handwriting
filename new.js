@@ -1,8 +1,8 @@
 function mockNew() {
-  const Constructor = Array.prototype.shift.call(arguments);
-  const _obj = Object.create(Constructor.prototype);
-  const res = Constructor.apply(_obj, arguments);
-  return typeof res === "object" ? res : _obj;
+  const constructor = Array.prototype.shift.call(arguments);
+  const __proto__ = Object.create(constructor.prototype);
+  const res = constructor.apply(__proto__, arguments);
+  return typeof res === "object" ? res : __proto__;
 }
 // demo
 function fn1() {}
