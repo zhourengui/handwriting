@@ -8,11 +8,11 @@ class MiniHeap {
   }
 
   getLeftIndex(index) {
-    return index * 2 + 1;
+    return (index << 1) + 1;
   }
 
   getRightIndex(index) {
-    return index * 2 + 2;
+    return (index << 1) + 2;
   }
 
   getParentIndex(index) {
@@ -31,13 +31,7 @@ class MiniHeap {
     [this.heap[i1], this.heap[i2]] = [this.heap[i2], this.heap[i1]];
   }
 
-  insert(target) {
-    this.heap.push(target);
-    this.shiftUp(this.heap.length - 1);
-  }
-
   shiftUp(index) {
-    if (index === 0) return;
     const parentIndex = this.getParentIndex(index);
     if (this.heap[parentIndex] > this.heap[index]) {
       this.swap(parentIndex, index);
@@ -48,20 +42,27 @@ class MiniHeap {
   shiftDown(index) {
     const leftIndex = this.getLeftIndex(index);
     const rightIndex = this.getRightIndex(index);
-    if (this.heap[index] > this.heap[leftIndex]) {
-      this.swap(leftIndex, index);
+    if (this.heap[leftIndex] < this.heap[index]) {
+      this.swap(index, leftIndex);
       this.shiftDown(leftIndex);
     }
 
-    if (this.heap[index] > this.heap[rightIndex]) {
-      this.swap(rightIndex, index);
+    if (this.heap[rightIndex] < this.heap[index]) {
+      this.swap(index, rightIndex);
       this.shiftDown(rightIndex);
     }
   }
 
+  insert(target) {
+    this.heap.push(target);
+    this.shiftUp(this.size() - 1);
+  }
+
   pop() {
-    this.heap[0] = this.heap.pop();
+    this.heap[0] = this.heap[this.size() - 1];
+    const top = this.heap.pop();
     this.shiftDown(0);
+    return top;
   }
 }
 

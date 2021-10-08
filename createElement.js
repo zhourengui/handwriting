@@ -9,21 +9,23 @@ function h(tag, props, children) {
 }
 
 function createHTMLElement({ tag, props, children }) {
-  const nextDOM = document.createElement(tag);
+  const dom = document.createElement(tag);
 
   for (const key in props) {
-    nextDOM.setAttribute(key, props[key]);
+    if (Object.hasOwnProperty.call(props, key)) {
+      dom.setAttribute(key, props[key]);
+    }
   }
 
-  for (const child of [].concat(children)) {
-    nextDOM.appendChild(
-      typeof child !== "object"
-        ? document.createTextNode(child)
-        : createHTMLElement(child)
+  for (const child of children) {
+    dom.appendChild(
+      typeof child === "object"
+        ? createHTMLElement(child)
+        : document.createTextNode(child)
     );
   }
 
-  return nextDOM;
+  return dom;
 }
 
 // demo

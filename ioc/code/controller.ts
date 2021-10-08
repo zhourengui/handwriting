@@ -1,4 +1,3 @@
-import { Container } from ".";
 import { getParams } from "./utils";
 
 export function controller<T extends new (...args: any[]) => any>(

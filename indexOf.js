@@ -1,5 +1,9 @@
-String.prototype.indexOf = function (str) {
-  const reg = new RegExp(str)
-  const execRet = reg.exec(this)
-  return execRet === null ? -1 : execRet.index
-}
+String.prototype.indexOf = function (target) {
+  for (let i = 0; i < this.length; i++) {
+    if (this[i] === target) {
+      return i;
+    }
+  }
+
+  return -1;
+};

@@ -1,25 +1,7 @@
-// function flatten(arr, deepth) {
-//   return arr.reduce(
-//     (prev, next) =>
-//       prev.concat(
-//         Array.isArray(next)
-//           ? deepth > 0
-//             ? flatten(next, deepth - 1)
-//             : [next]
-//           : next
-//       ),
-//     []
-//   );
-// }
-
 function flatten(arr, depth) {
   return arr.reduce(
     (prev, next) =>
-      prev.concat(
-        depth > 0
-          ? flatten(Array.isArray(next) ? next : [next], depth - 1)
-          : [next]
-      ),
+      prev.concat(depth > 0 ? (Array.isArray(next) ? next : [next]) : [next]),
     []
   );
 }

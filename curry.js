@@ -2,11 +2,10 @@ const curry = (fn, arity = fn.length, nextCurried) =>
   (nextCurried =
     (prevArgs) =>
     (...nextArgs) => {
-      const args = [...prevArgs, ...nextArgs];
+      const args = prevArgs.concat(nextArgs);
       return args.length >= arity ? fn(...args) : nextCurried(args);
     })([]);
 
-// demo
-const addCurry = curry((x, y, z) => console.log(x + y + z));
+const add = curry((a, b, c) => a + b + c);
 
-addCurry(1)(2)(3);
+console.log(add(1)(2)(3));

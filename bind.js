@@ -1,6 +1,6 @@
 Function.prototype.bind = function (context) {
-  const prevArgs = Array.prototype.slice.call(arguments, 1);
   const _this = this;
+  const prevArgs = Array.prototype.slice.call(arguments, 1);
 
   function BindFn() {
     const nextArgs = Array.prototype.slice.call(arguments);

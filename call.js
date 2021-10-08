@@ -1,12 +1,18 @@
 Function.prototype.call = function (context) {
+  const key = Symbol("fn");
   const args = [];
+
   context = context ? Object(context) : globalThis;
-  context.fn = this;
+  context[key] = this;
+
   for (let i = 1; i < arguments.length; i++) {
     args.push(`arguments[${i}]`);
   }
-  const res = eval(`context.fn(${args})`);
-  delete context.fn;
+
+  const res = eval(`context[key](${args})`);
+
+  delete context[key];
+
   return res;
 };
 

@@ -27,3 +27,5 @@ function stringify(input) {
     ? padStr(String(res), "{", "}")
     : padStr(String(res), "[", "]");
 }
+
+console.log(stringify({ name: "Tencent" }));

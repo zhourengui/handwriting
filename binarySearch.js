@@ -1,20 +1,20 @@
 Array.prototype.binarySearch = function (target) {
   let low = 0,
     high = this.length - 1,
-    mid
+    mid;
 
   while (low <= high) {
-    mid = Math.floor((low + high) / 2)
+    mid = Math.floor((low + high) / 2);
     if (this[mid] === target) {
-      return mid
+      return mid;
     } else if (this[mid] > target) {
-      high = mid - 1
+      high = mid - 1;
     } else {
-      low = mid + 1
+      low = mid + 1;
     }
   }
-}
+};
 
 // demo
-const arr = [1, 2, 3]
-console.log(arr.binarySearch(3))
+const arr = [1, 2, 3];
+console.log(arr.binarySearch(3));
