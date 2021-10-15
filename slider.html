@@ -1,0 +1,59 @@
+<!-- 用CSS实现一个开关样式，hover时触发，滑块为正方形，具体大小随意 -->
+<!-- 开关动作均有动画过度（滑块移位，背景色） -->
+<!-- 只用一个DOM实现 -->
+<!-- 开关的高度是固定的，但宽度不固定，即宽度未未知父元素的100%，宽度始终大于高度 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>滑块CSS</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      .wrapper {
+        width: 200px;
+        margin-left: 50px;
+        margin-top: 50px;
+      }
+
+      .slider {
+        --height: 40px;
+        --padding: 3px;
+        min-width: var(--height);
+        height: var(--height);
+        width: 100%;
+        position: relative;
+        background-color: #eee;
+        transition: all 1s;
+      }
+
+      .slider:hover {
+        background-color: green;
+      }
+
+      .slider::before {
+        content: "";
+        position: absolute;
+        left: var(--padding);
+        top: var(--padding);
+        width: calc(var(--height) - 2 * var(--padding));
+        height: calc(var(--height) - 2 * var(--padding));
+        background-color: #fff;
+        transition: all 1s;
+      }
+
+      .slider:hover::before {
+        left: calc(100% - var(--height) + var(--padding));
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="slider"></div>
+    </div>
+  </body>
+</html>
