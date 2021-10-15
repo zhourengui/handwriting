@@ -1,17 +1,15 @@
 import { parseScript } from "esprima";
-export function getParams(fn: Function) {
-  const ast = parseScript(fn.toString(), {});
+
+export const getParams = <T extends new (...args: any[]) => any>(
+  constructor: T
+) => {
+  const ast = parseScript(String(constructor));
   const node = ast.body[0];
-  let params: any[] = [];
-  let validParams: string[] = [];
-
+  const params = [];
   if (node.type === "FunctionDeclaration") {
-    params = node.params;
+    for (const param of node.params) {
+      params.push((param as any).name);
+    }
   }
-
-  for (const item of params) {
-    validParams.push(item.name);
-  }
-
-  return validParams;
-}
+  return params;
+};

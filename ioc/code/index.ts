@@ -1,8 +1,7 @@
 import "reflect-metadata";
+import container from "./container";
+import controller from "./controller";
+import inject from "./inject";
+import injectable from "./injectable";
 
-import { Container } from "./Container";
-import { controller } from "./controller";
-import { inject } from "./indejct";
-import { injectable } from "./injectable";
-
-export { Container, controller, inject, injectable };
+export { container, controller, inject, injectable };
