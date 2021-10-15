@@ -44,6 +44,7 @@ Symbol.keyFor = function (sym) {
   for (const key in globalRegister) {
     if (Object.hasOwnProperty.call(globalRegister, key)) {
       if (globalRegister[key] === sym) {
+        ("");
         return key;
       }
     }

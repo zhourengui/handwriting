@@ -4,15 +4,15 @@ let _obj = {
     isUndefined: "Undefined",
   },
   _toString = _obj.toString,
-  _type = {}
+  _type = {};
 
 for (const key in _obj) {
   if (Object.hasOwnProperty.call(_obj, key)) {
     _type[key] = function (val) {
-      return _toString.call(val) === `[object ${_obj[key]}]`
-    }
+      return _toString.call(val) === `[object ${_obj[key]}]`;
+    };
   }
 }
 
 // demo
-console.error(_type.isUndefined(undefined))
+console.error(_type.isUndefined(undefined));

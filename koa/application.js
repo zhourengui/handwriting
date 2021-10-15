@@ -1,58 +1,53 @@
-const http = require("http")
-const EventEmitter = require("events")
-const context = require("./context")
+const http = require("http");
+const EventEmitter = require("events");
+const context = require("./context");
 
-module.exports = class Application {
+module.exports = class Application extends EventEmitter {
   constructor() {
-    this.middlewares = []
+    super();
+    this.middlewares = [];
   }
 
   use(middleware) {
-    this.middlewares.push(middleware)
+    this.middlewares.push(middleware);
+  }
+
+  async compose(context) {
+    const createNext = (middleware, next) => async () =>
+      await middleware(context, next);
+
+    let next = () => Promise.resolve();
+    let len = this.middlewares.length - 1;
+
+    while (len >= 0) {
+      next = createNext(this.middlewares[len], next);
+      len--;
+    }
+
+    return await next();
   }
 
   createContext(req, res) {
-    const nextContext = Object.create(context)
-    nextContext.req = req
-    nextContext.res = res
-    nextContext.app = this
-    return nextContext
+    const nextContext = Object.create(context);
+    nextContext.req = req;
+    nextContext.res = res;
+    nextContext.app = this;
+    return nextContext;
   }
 
-  compose() {
-    return async (ctx) => {
-      const createNext = (middleware, next) => async () =>
-        await middleware(ctx, next)
-
-      let next = () => Promise.resolve()
-      let len = this.middlewares.length
-
-      while (len > 0) {
-        next = createNext(this.middlewares[len - 1], next)
-        len--
-      }
-
-      return await next()
-    }
-  }
-
-  onerror(error) {
-    this.emit("error", error)
-  }
-
-  callback() {
-    return (req, res) => {
-      const ctx = this.createContext(req, res)
-      const fn = this.compose()
-
-      fn(ctx)
-        .then(() => {})
-        .catch((error) => this.onerror(error))
-    }
+  onerror(err) {
+    this.emit("error", err);
   }
 
   listen(...args) {
-    const server = http.createServer(this.callback())
-    server.listen(...args)
+    const server = http.createServer((req, res) => {
+      const context = this.createContext(req, res);
+
+      this.compose(context).then(
+        () => {},
+        (err) => this.onerror(err)
+      );
+    });
+    server.listen(...args);
   }
-}
+};

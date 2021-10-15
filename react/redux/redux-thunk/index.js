@@ -3,11 +3,10 @@ export default function createThunkMiddleware(...args) {
     return function (next) {
       return function (action) {
         if (typeof action === "function") {
-          return action(getState, dispatch, ...args)
+          return action(getState(), dispatch, ...args);
         }
-
-        return next(action)
-      }
-    }
-  }
+        return next(action);
+      };
+    };
+  };
 }

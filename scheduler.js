@@ -32,10 +32,10 @@ class Scheduler {
 }
 
 // demo
-const scheduler = new Scheduler(3);
+const scheduler = new Scheduler(1);
 const sleep = (wait) => new Promise((resolve) => setTimeout(resolve, wait));
 
 scheduler.addTask(() => sleep(4000)).then(() => console.log(1));
 scheduler.addTask(() => sleep(2000)).then(() => console.log(2));
 scheduler.addTask(() => sleep(3000)).then(() => console.log(3));
-scheduler.addTask(() => sleep(900)).then(() => console.log(4));
+scheduler.addTask(() => sleep(10000)).then(() => console.log(4));
