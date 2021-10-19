@@ -1,52 +1,52 @@
-// 时间复杂度是O(nlogn)
-// 最长递增子序列
-// 动态规划
-// 贪心算法和二分法
+// 思路：
+// 1. 克隆一个数组，目的为了存放每个值的上一个值的索引
+// 2. 遍历数组，如果当前项比返回数组的最后一项还要大，直接push进去即可
+// 3. 否则使用二分法，如果中间的值小于当前的，说明在右边，否则就是在左边，然后将返回数组的low索引的值修改成i，如果low大于0说明替换的位置不在第一位，所以修改克隆数组的当前项的值，这个值就是上一项的值
+// 4. 最终获取到的数组是索引，从最后一项开始遍历，从原数组获取到值，然后下一个要取的索引就是克隆数组的值(cloneArr[low - 1])
+// 5. 克隆数组的作用就是通过值去关联上一个值的索引位置
 
-[0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
 function getSequence(arr) {
-  const l = arr.length,
-    p = arr.slice(),
-    r = [0];
+  const arrLen = arr.length;
+  const cloneArr = arr.slice();
+  const res = [0];
 
-  let m, u, v, c;
-
-  for (let i = 0; i < l; i++) {
-    const arrI = arr[i];
-    m = r[r.length - 1];
-    if (arr[m] < arrI) {
-      p[i] = m;
-      r.push(i);
+  for (let i = 0; i < arrLen; i++) {
+    const curr = arr[i];
+    const top = res[res.length - 1];
+    if (curr > arr[top]) {
+      cloneArr[i] = top;
+      res.push(i);
       continue;
     }
 
-    u = 0;
-    v = r.length;
-    while (u < v) {
-      c = Math.floor((u + v) / 2) | 0;
-      if (arr[r[c]] < arrI) {
-        u = c + 1;
+    let low = 0;
+    let high = res.length;
+
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2);
+      if (arr[res[mid]] < curr) {
+        low = mid + 1;
       } else {
-        v = c;
+        high = mid;
       }
     }
 
-    if (u > 0) {
-      p[i] = r[u - 1];
+    if (low > 0) {
+      cloneArr[i] = res[low - 1];
     }
-    r[u] = i;
+    res[low] = i;
   }
 
-  u = r.length;
-  v = r[u - 1];
+  let p = res.length;
+  let v = res[p - 1];
 
-  while (u > 0) {
-    r[u - 1] = arr[v];
-    v = p[v];
-    u--;
+  while (p > 0) {
+    res[p - 1] = arr[v];
+    v = cloneArr[v];
+    p--;
   }
 
-  return r;
+  return res;
 }
 
 // demo
