@@ -1,18 +1,11 @@
 // 使用setTimeout模拟setInterval
 
 function setInterval(handler, wait) {
-  let timer = null;
-  const rec = () => {
-    timer = setTimeout(() => {
-      clearTimeout(timer);
-      handler();
-      if (!timer._onTimeout) {
-        rec();
-      }
-    }, wait);
-  };
-
-  rec();
+  let timer = setTimeout(() => {
+    clearTimeout(timer);
+    handler();
+    timer = setTimeout(handler, wait);
+  }, wait);
 }
 
 setInterval(() => console.log("setInterval"), 2000);
