@@ -2,14 +2,16 @@ const modules = {
   user: {
     namespaced: true,
     state: {},
-    getters: {},
+    getters: {
+      isLoading: true,
+    },
     actions: {},
     mutations: {},
   },
   other: {
     namespaced: true,
     state: {},
-    getters: {},
+    getters: { count: () => 1 },
     actions: {},
     mutations: {},
   },
@@ -66,6 +68,8 @@ type GetSpliceKeys<M> = {
   [K in keyof M]: GetSpliceKey<K, keyof M[K]>;
 }[keyof M];
 
+type s = GetSpliceKeys<MGetters>;
+
 /**
  * {
  *   "user/isLoading": () => string
@@ -90,10 +94,6 @@ type GetSpliceObj<M> = {
  *   "user/isLoading": string
  * }
  */
-type ModuleGetters = GetSpliceObj<MGetters>;
-
-type Getters = {
-  [K in keyof ModuleGetters]: ReturnType<ModuleGetters[K]>;
-};
+type Getters = GetSpliceObj<MGetters>;
 
 export { Getters };
