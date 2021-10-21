@@ -2,7 +2,7 @@ Function.prototype.apply = function (context) {
   context = context ? Object(context) : globalThis;
   const key = Symbol("fn");
   context[key] = this;
-  const res = context[key](arguments[1]);
+  const res = context[key](...arguments[1]);
   delete context[key];
   return res;
 };
