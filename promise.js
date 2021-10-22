@@ -1,31 +1,33 @@
 const PENDING = "PENDING";
-const FULFILLED = "FULFILLED";
+const FULFILED = "FULFILED";
 const REJECTED = "REJECTED";
 
-function promiseResoulveProgram(promise, x, resolve, reject) {
+const isPromise = (x) => x instanceof Promise;
+const isThenable = (x) =>
+  x !== null &&
+  (typeof x === "function" || typeof x === "object") &&
+  typeof x.then === "function";
+
+function handlePromiseOrThenable(promise, x, resolve, reject) {
   if (promise === x) {
-    throw new Error("自身嵌套");
+    throw new Error("自身嵌套调用");
   }
 
-  if (x instanceof Promise) {
+  if (isPromise(x)) {
     if (x.state === PENDING) {
-      x.then(
-        (y) => promiseResoulveProgram(promise, y, resolve, reject),
+      x.then((y) => y).then(
+        (y) => handlePromiseOrThenable(promise, y, resolve, reject),
         reject
       );
     } else {
-      x.state === FULFILLED && resolve(x.value);
+      x.state === FULFILED && resolve(x.value);
       x.state === REJECTED && reject(x.value);
     }
     return;
   }
 
-  if (
-    x !== null &&
-    (typeof x === "object" || typeof x === "function") &&
-    typeof x.then === "function"
-  ) {
-    x.then((y) => promiseResoulveProgram(promise, y, resolve, reject), reject);
+  if (isThenable(x)) {
+    x.then((y) => handlePromiseOrThenable(promise, y, resolve, reject), reject);
   } else {
     resolve(x);
   }
@@ -35,30 +37,30 @@ class Promise {
   constructor(fn) {
     this.state = PENDING;
     this.value = null;
-    this.reoslveCallbacks = [];
+    this.resolveCallbacks = [];
     this.rejectCallbacks = [];
 
     const resolve = (value) => {
-      if (value instanceof Promise) {
-        return promiseResoulveProgram(this, value, resolve, reject);
+      if (isPromise(value) || isThenable(value)) {
+        return handlePromiseOrThenable(this, value, resolve, reject);
       }
       setTimeout(() => {
         this.value = value;
-        this.state = FULFILLED;
-        for (const callback of this.reoslveCallbacks) {
-          callback();
+        this.state = FULFILED;
+        for (const callback of this.resolveCallbacks) {
+          callback(value);
         }
       }, 0);
     };
     const reject = (value) => {
-      if (value instanceof Promise) {
-        return promiseResoulveProgram(this, value, resolve, reject);
+      if (isPromise(value) || isThenable(value)) {
+        return handlePromiseOrThenable(this, value, resolve, reject);
       }
       setTimeout(() => {
         this.value = value;
         this.state = REJECTED;
         for (const callback of this.rejectCallbacks) {
-          callback();
+          callback(value);
         }
       }, 0);
     };
@@ -73,40 +75,41 @@ class Promise {
     }
   ) {
     let promise;
+
     if (this.state === PENDING) {
       promise = new Promise((resolve, reject) => {
-        this.reoslveCallbacks.push(() => {
-          const x = onResolve(this.value);
-          promiseResoulveProgram(promise, x, resolve, reject);
+        this.resolveCallbacks.push((value) => {
+          const x = onResolve(value);
+          handlePromiseOrThenable(promise, x, resolve, reject);
         });
+        this.rejectCallbacks.push((value) => {
+          const x = onReject(value);
+          handlePromiseOrThenable(promise, x, resolve, reject);
+        });
+      });
+    }
 
-        this.rejectCallbacks.push(() => {
-          const x = onReject(this.value);
-          promiseResoulveProgram(promise, x, resolve, reject);
+    if (this.state === FULFILED) {
+      promise = new Promise((resolve, reject) => {
+        this.resolveCallbacks.push((value) => {
+          const x = onResolve(value);
+          handlePromiseOrThenable(promise, x, resolve, reject);
         });
       });
     }
 
     if (this.state === REJECTED) {
       promise = new Promise((resolve, reject) => {
-        this.rejectCallbacks.push(() => {
-          const x = onReject(this.value);
-          promiseResoulveProgram(promise, x, resolve, reject);
-        });
-      });
-    }
-
-    if (this.state === FULFILLED) {
-      promise = new Promise((resolve, reject) => {
-        this.reoslveCallbacks.push(() => {
-          const x = onResolve(this.value);
-          promiseResoulveProgram(promise, x, resolve, reject);
+        this.rejectCallbacks.push((value) => {
+          const x = onReject(value);
+          handlePromiseOrThenable(promise, x, resolve, reject);
         });
       });
     }
 
     return promise;
   }
+
   catch(
     onReject = (err) => {
       throw new Error(err);
@@ -114,6 +117,7 @@ class Promise {
   ) {
     return this.then(undefined, onReject);
   }
+
   finally(callback = (...args) => args) {
     return this.then(
       (data) => Promise.resolve(callback()).then(() => data),
@@ -123,6 +127,7 @@ class Promise {
         })
     );
   }
+
   static all(promises) {
     return new Promise((resolve, reject) => {
       let count = 0;
@@ -175,20 +180,18 @@ class Promise {
       }
     });
   }
-  static resolve(data) {
-    if (data instanceof Promise) return data;
-    if (
-      data !== null &&
-      (typeof data === "function" || typeof data === "object") &&
-      typeof data.then === "function"
-    )
-      return new Promise((resolve, reject) => data.then(resolve, reject));
 
+  static resolve(data) {
+    if (isPromise(data)) return data;
+    if (isThenable(data))
+      return new Promise((resolve, reject) => data.then(resolve, reject));
     return new Promise((resolve) => resolve(data));
   }
+
   static reject(reason) {
     return new Promise((_, reject) => reject(reason));
   }
+
   static limit(count) {
     let queue = [],
       working = 0;
@@ -220,60 +223,47 @@ class Promise {
   }
 }
 
-// demo
 // new Promise((resolve, reject) => {
-//   reject(111)
+//   resolve(Promise.resolve());
 // })
-//   .then(
-//     (res) => {
-//       return {
-//         then(resolve, reject) {
-//           resolve({
-//             then(resolve, reject) {
-//               resolve(res)
-//             },
-//           })
-//         },
-//       }
-//     },
-//     (err) => {}
-//   )
-//   .then((res) => {
-//     return new Promise((resolve, reject) => {
-//       resolve(res)
-//     })
-//   })
-//   .then((res) => {})
-//   .catch((err) => console.error("err", err))
+//   .then(() => console.log("promise1"))
+//   .then(() => console.log("promise2"))
+//   .then(() => Promise.resolve())
+//   .then(() => console.log("promise4"))
+//   .then(() => console.log("promise5"));
 
-// const promise1 = new Promise((resolve) => resolve(1))
-// console.log(promise1.finally())
+// new Promise((resolve, reject) => {
+//   resolve();
+// })
+//   .then(() => console.log("promise6"))
+//   .then(() => console.log("promise7"))
+//   .then(() => console.log("promise8"))
+//   .then(() => console.log("promise9"))
+//   .then(() => console.log("promise10"))
+//   .then(() => console.log("promise11"))
+//   .then(() => console.log("promise12"))
+//   .then(() => console.log("promise13"));
 
-// Promise.all([
-//   new Promise((resolve) => resolve(1)),
-//   new Promise((resolve) => resolve(2)),
-// ]).then((res) => console.error(res))
+function sleep(wait) {
+  return new Promise((resolve) => setTimeout(resolve, wait));
+}
 
-// Promise.race([
-//   new Promise((resolve) => resolve(1)),
-//   new Promise((resolve) => resolve(2)),
-// ])
-//   .then((res) => 2)
-//   .finally((s) => console.error(s))
+function asyncTask(name, awit) {
+  console.log(name);
+  return new Promise(async (resolve) => {
+    await sleep(awit);
+    resolve(name);
+  });
+}
 
 const limit = Promise.limit(1);
 
-Promise.all(
-  ["a", "b", "c", "d", "e", "f"].map((name) => limit(() => task(name)))
-).then((res) => {
-  console.error("res", res);
-});
+(async () => {
+  const res = await Promise.all(
+    ["name", "age", "other"].map((v, k) =>
+      limit(() => asyncTask(v, 2000 * (k + 1)))
+    )
+  );
 
-function task(name) {
-  console.error("Task:", name);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(name);
-    }, 3000);
-  });
-}
+  console.log(res);
+})();
