@@ -1,10 +1,9 @@
 // 手写map
 
-Array.prototype.map = function (handler) {
-  const arr = [];
-  for (const item of this) {
-    arr.push(handler(item));
+Array.prototype.map = function (callback) {
+  const res = [];
+  for (let i = 0; i < this.length; i++) {
+    res.push(callback.call(this, this[i], i, this));
   }
-
-  return arr;
+  return res;
 };
