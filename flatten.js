@@ -1,7 +1,11 @@
 function flatten(arr, depth) {
   return arr.reduce(
     (prev, next) =>
-      prev.concat(depth > 0 ? (Array.isArray(next) ? next : [next]) : [next]),
+      prev.concat(
+        depth > 0
+          ? flatten(Array.isArray(next) ? next : [next], depth - 1)
+          : [next]
+      ),
     []
   );
 }
