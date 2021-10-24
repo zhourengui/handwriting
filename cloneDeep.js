@@ -15,7 +15,7 @@ function cloneDeep(input, map = new WeakMap()) {
   map.set(input, output);
   for (const key in input) {
     if (Object.hasOwnProperty.call(input, key)) {
-      output[key] = cloneDeep(input[key]);
+      output[key] = cloneDeep(input[key], map);
     }
   }
   return output;
