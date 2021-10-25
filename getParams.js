@@ -8,8 +8,7 @@ function getParams(url) {
       res["HASH"] = hash;
     }
     while (true) {
-      const reg2Ret = reg2.exec(params.substring(1));
-      const [_, key, value] = reg2Ret;
+      const [_, key, value] = reg2.exec(params.substring(1));
       res[key] = value;
     }
   } catch {}
