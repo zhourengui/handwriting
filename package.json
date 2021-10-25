@@ -1,0 +1,11 @@
+{
+  "name": "手写",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/zhourengui/handwriting.git",
+  "author": "ZhouRenGui <729049182@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "rxjs": "^7.4.0"
+  }
+}
