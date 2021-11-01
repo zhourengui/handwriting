@@ -130,16 +130,17 @@ class Promise {
 
   static all(promises) {
     return new Promise((resolve, reject) => {
-      let count = 0;
+      let finishCount = 0;
       let res = [];
-      for (const promise of promises) {
-        Promise.resolve(promise).then((data) => {
-          res.push(data);
-          count++;
-          if (count === promises.length) {
+      let len = promises.length;
+      for (let i = 0; i < len; i++) {
+        Promise.resolve(promises[i]).then((data) => {
+          finishCount++;
+          res[i] = data;
+          if (len === finishCount) {
             resolve(res);
           }
-        }, reject);
+        });
       }
     });
   }

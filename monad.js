@@ -48,7 +48,7 @@ const readFile = (filepath) => {
 
 const print = (content) => {
   return IO.of(function () {
-    return "123";
+    console.log(content);
   });
 };
 
