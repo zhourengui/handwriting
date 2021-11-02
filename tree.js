@@ -42,14 +42,14 @@ const dfs = (root) => {
 
 // 广度优先遍历
 
-const bfs = (root) => {
-  const queue = [root];
-  while (queue.length > 0) {
-    const top = queue.shift();
-    console.log(top.value);
-    top.children.forEach((child) => queue.push(child));
-  }
-};
+// const bfs = (root) => {
+//   const queue = [root];
+//   while (queue.length > 0) {
+//     const top = queue.shift();
+//     console.log(top.value);
+//     top.children.forEach((child) => queue.push(child));
+//   }
+// };
 
 const binaryTree = {
   value: "A",
@@ -80,6 +80,23 @@ const binaryTree = {
     },
   },
 };
+
+const bfs = (root) => {
+  if (!root) return;
+  const queue = [root];
+  while (queue.length) {
+    const top = queue.shift();
+    console.log(top.value);
+    if (top.left) {
+      queue.push(top.left);
+    }
+    if (top.right) {
+      queue.push(top.right);
+    }
+  }
+};
+
+bfs(binaryTree);
 
 // 二叉树
 // 先中后续遍历
