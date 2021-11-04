@@ -9,11 +9,23 @@ Array.prototype.reduce = function (callback, initState) {
     throw new TypeError("callee is required a array");
   }
 
-  let res = initState;
-
-  for (let i = 0; i < this.length; i++) {
-    res = callback.call(this, res, this[i], i, this);
+  if (this.length === 0) {
+    throw new Error("array is must not empty");
   }
 
-  return res;
+  let prev = initState;
+  let p = 0;
+  let len = this.length;
+
+  if (initState === undefined) {
+    prev = this[0];
+    p++;
+  }
+
+  while (p < len) {
+    prev = callback(prev, this[p], p, this);
+    p++;
+  }
+
+  return prev;
 };
