@@ -4,7 +4,7 @@ function fetchTimeout(fn, timeout) {
       setTimeout(() => {
         reject();
       }, timeout);
-      return Promise.resolve(fn.apply(this, arguments)).then(resovle, reject);
+      return fn.apply(this, arguments).then(resovle, reject);
     });
   };
 }

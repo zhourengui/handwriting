@@ -4,20 +4,20 @@
 
 const imgs = Array.from(document.getElementsByTagName("img")).filter((img) =>
   img.hasAttribute("lazy")
-)
+);
 function lazyload() {
-  const wScrollY = window.scrollY
-  const wOuterHeight = window.outerHeight
+  const wScrollY = window.scrollY;
+  const wOuterHeight = window.outerHeight;
   for (let i = 0; i < imgs.length; i++) {
-    const img = imgs[i]
-    const isLoad = img.hasAttribute("isLoad")
-    const iOffsetTop = img.offsetTop
-    const iOffsetHeight = img.offsetHeight
+    const img = imgs[i];
+    const isLoad = img.hasAttribute("isLoad");
+    const iOffsetTop = img.offsetTop;
+    const iOffsetHeight = img.offsetHeight;
     if (!isLoad && iOffsetHeight + iOffsetTop - wScrollY < wOuterHeight) {
-      img.setAttribute("isLoad", "TRUE")
-      img.setAttribute("src", img.getAttribute("data-img"))
+      img.setAttribute("isLoad", "TRUE");
+      img.setAttribute("src", img.getAttribute("data-img"));
     }
   }
 }
-window.addEventListener("load", lazyload)
-window.addEventListener("scroll", lazyload)
+window.addEventListener("load", lazyload);
+window.addEventListener("scroll", lazyload);
