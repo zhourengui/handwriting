@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS3 实现 KTV 字幕</title>
+    <style>
+      #root {
+        display: inline;
+        font-size: 40px;
+        font-weight: bold;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-color: brown;
+        background-position: -480px 0;
+        background-image: linear-gradient(to right, black, black);
+        background-repeat: no-repeat;
+        animation: loop 5s linear infinite;
+      }
+      @keyframes loop {
+        100% {
+          background-position: 0 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">一位不知名的前端爱好者</div>
+  </body>
+</html>

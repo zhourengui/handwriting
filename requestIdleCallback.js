@@ -23,5 +23,5 @@ function requestIdleCallback(callback) {
 // demo
 requestIdleCallback(({ didTimeout, timeRemaining }) => {
   console.log("剩余时间", timeRemaining());
-  console.log("是否过期", didTimeout);
+  console.log("是否过期", didTimeout)
 });

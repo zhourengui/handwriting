@@ -39,7 +39,7 @@ Symbol.for = function (desc) {
 
 Symbol.keyFor = function (sym) {
   if (!(sym instanceof Symbol)) {
-    throw new TypeError("keyfor is required Symbole param");
+    throw new TypeError("keyfor is required Symbol param");
   }
   for (const key in globalRegister) {
     if (Object.hasOwnProperty.call(globalRegister, key)) {
