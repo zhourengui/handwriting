@@ -1,31 +1,27 @@
-// 手写 reduce
-
 Array.prototype.reduce = function (callback, initState) {
+  if (this === null || this === undefined) {
+    throw new TypeError("Array.prototype.reduce called on null or undefined");
+  }
+
   if (typeof callback !== "function") {
-    throw new TypeError("callback is required a function");
+    throw new TypeError("The first parameter must be a function");
   }
 
-  if (!Array.isArray(this)) {
-    throw new TypeError("callee is required a array");
+  if (!this.length && !initState) {
+    throw new Error("Reduce of empty array with no initial value");
   }
 
-  if (this.length === 0) {
-    throw new Error("array is must not empty");
+  if (initState && !this.length) {
+    return initState;
   }
 
-  let prev = initState;
-  let p = 0;
-  let len = this.length;
+  let preState = initState || this[0];
+  let p = initState ? 0 : 1;
 
-  if (initState === undefined) {
-    prev = this[0];
+  while (p < this.length) {
+    preState = callback(preState, this[p], p, this);
     p++;
   }
 
-  while (p < len) {
-    prev = callback(prev, this[p], p, this);
-    p++;
-  }
-
-  return prev;
+  return preState;
 };
